@@ -91,10 +91,20 @@ jobs:
           key:      ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
+
+            mkdir -p ~/market-sentinel
             cd ~/market-sentinel
 
-            # Update only the frontend image tag in .env
-            sed -i "s|^FRONTEND_IMAGE=.*|FRONTEND_IMAGE=${{ needs.build.outputs.image }}:${{ github.sha }}|" .env
+            # Upsert FRONTEND_IMAGE in .env — add line if missing, replace if present
+            if [ -f .env ] && grep -q "^FRONTEND_IMAGE=" .env; then
+              sed -i "s|^FRONTEND_IMAGE=.*|FRONTEND_IMAGE=${{ needs.build.outputs.image }}:${{ github.sha }}|" .env
+            else
+              echo "FRONTEND_IMAGE=${{ needs.build.outputs.image }}:${{ github.sha }}" >> .env
+            fi
+
+            # Always fetch the latest prod compose so frontend config stays in sync
+            curl -fsSL https://raw.githubusercontent.com/himanshu763/Market-Sentinel/master/docker-compose.prod.yml \
+              -o docker-compose.prod.yml
 
             # Login to GHCR and pull the new frontend image
             echo "${{ secrets.GITHUB_TOKEN }}" \
