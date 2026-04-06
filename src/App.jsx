@@ -3,7 +3,7 @@ import { useProductComparison } from './hooks/useProductComparison';
 
 function App() {
   const [inputUrl, setInputUrl] = useState('');
-  const { data, loading, error, fetchComparison } = useProductComparison();
+  const { data, loading, error: _error, fetchComparison } = useProductComparison();
 
   const handleSearch = (e) => {
     e.preventDefault();
