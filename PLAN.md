@@ -134,10 +134,10 @@ graph TD
 **Why:** Today, any render error = white screen. And the `error` state is tracked but never displayed.
 
 **Tasks:**
-- [ ] Add `ErrorBoundary.tsx` wrapping `<App />` in `main.tsx`
-- [ ] Render `ErrorBanner` when `error` is non-null (currently silent)
-- [ ] Render `EmptyState` when `data.results` is empty or `data.similarProducts` is empty
-- [ ] Show user-friendly messages, not raw error strings
+- [x] Add `ErrorBoundary.tsx` wrapping `<App />` in `main.tsx`
+- [x] Render `ErrorBanner` when `error` is non-null (currently silent)
+- [x] Render `EmptyState` when `data.results` is empty or `data.similarProducts` is empty
+- [x] Show user-friendly messages, not raw error strings
 
 ---
 
@@ -146,11 +146,11 @@ graph TD
 **Why:** Stale response races, no cancellation, misleading error text.
 
 **Tasks:**
-- [ ] Add `AbortController` -- abort in-flight request when a new one starts
-- [ ] Add cleanup on unmount (return abort from `useEffect` or track ref)
-- [ ] Fix error message: `"Server expansion failed"` -> `"Failed to fetch comparison results. Please try again."`
-- [ ] Add basic request timeout (10s via `AbortSignal.timeout(10000)`)
-- [ ] Add URL validation before fetch (check valid URL format, reject empty/malformed)
+- [x] Add `AbortController` -- abort in-flight request when a new one starts
+- [x] Add cleanup on unmount (return abort from `useEffect` or track ref)
+- [x] Fix error message: `"Server expansion failed"` -> `"Failed to fetch comparison results. Please try again."`
+- [x] Add basic request timeout (10s via `AbortSignal.timeout(10000)`)
+- [x] Add URL validation before fetch (check valid URL format, reject empty/malformed)
 
 ```typescript
 // Simplified pattern
@@ -189,11 +189,11 @@ const fetchComparison = async (url: string) => {
 **Why:** External links without `rel="noopener noreferrer"` enable reverse tabnapping. Missing ARIA labels fail WCAG.
 
 **Tasks:**
-- [ ] All external `<a>` tags: add `target="_blank" rel="noopener noreferrer"`
-- [ ] Search input: add `aria-label="Product URL"`, `type="url"`
-- [ ] Submit button: add `aria-label` for loading state
-- [ ] Result cards: add `role="article"` or semantic `<article>` tags
-- [ ] Use stable keys: replace `key={idx}` with `key={item.product.productUrl}` or `key={`${item.platform}-${idx}`}`
+- [x] All external `<a>` tags: add `target="_blank" rel="noopener noreferrer"`
+- [x] Search input: add `aria-label="Product URL"`, `type="url"`
+- [x] Submit button: add `aria-label` for loading state
+- [x] Result cards: add `role="article"` or semantic `<article>` tags
+- [x] Use stable keys: replace `key={idx}` with `key={item.product.productUrl}` or `key={`${item.platform}-${idx}`}`
 
 ---
 
