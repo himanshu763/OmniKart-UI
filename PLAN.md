@@ -264,9 +264,9 @@ const fetchComparison = async (url: string) => {
 
 ### P2.4 -- E2E Test (Single Happy Path)
 
-- [ ] Install Playwright
-- [ ] One test: load page -> paste URL -> submit -> verify at least one result card visible
-- [ ] Add to CI as a separate job (runs against dev server)
+- [x] Install Playwright
+- [x] One test: load page -> paste URL -> submit -> verify at least one result card visible
+- [x] Add to CI as a separate job (runs against dev server)
 
 ---
 
