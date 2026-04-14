@@ -256,9 +256,9 @@ const fetchComparison = async (url: string) => {
 
 ### P2.3 -- Integration Tests
 
-- [ ] Full search flow: type URL -> submit -> mock API -> verify results render
-- [ ] Error flow: submit -> API 500 -> verify error banner
-- [ ] Empty flow: submit -> API returns `[]` -> verify empty state
+- [x] Full search flow: type URL -> submit -> mock API -> verify results render
+- [x] Error flow: submit -> API 500 -> verify error banner
+- [x] Empty flow: submit -> API returns `[]` -> verify empty state
 
 ---
 
