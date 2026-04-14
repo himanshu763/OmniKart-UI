@@ -25,11 +25,11 @@ Phase 4: Scale & DX         ░░░░░░░░░░░░░░░░█�
 **Why:** `@types/react` is already installed but unused. JS-only means zero compile-time safety for props, API responses, or state -- bugs that TS catches for free today become runtime crashes in production.
 
 **Scope:**
-- [ ] Rename `.jsx` -> `.tsx`, `.js` -> `.ts`
-- [ ] Add `tsconfig.json` (strict mode)
-- [ ] Update `vite.config.js` -> `vite.config.ts`
-- [ ] Update `eslint.config.js` with `@typescript-eslint`
-- [ ] Define explicit interfaces for all API types:
+- [x] Rename `.jsx` -> `.tsx`, `.js` -> `.ts`
+- [x] Add `tsconfig.json` (strict mode)
+- [x] Update `vite.config.js` -> `vite.config.ts`
+- [x] Update `eslint.config.js` with `@typescript-eslint`
+- [x] Define explicit interfaces for all API types:
 
 ```typescript
 // src/types/api.ts

@@ -1,20 +1,35 @@
 import { useState } from 'react';
+import type { JSX, FormEvent } from 'react';
 import { useProductComparison } from './hooks/useProductComparison';
 
-function App() {
+function getConfidenceBadge(score: number): JSX.Element {
+  const percentage = Math.round(score * 100);
+  if (score >= 0.7)
+    return (
+      <span className="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold border border-emerald-200">
+        {percentage}% Match
+      </span>
+    );
+  if (score >= 0.5)
+    return (
+      <span className="bg-amber-100 text-amber-700 text-xs px-2.5 py-1 rounded-full font-bold border border-amber-200">
+        {percentage}% Match
+      </span>
+    );
+  return (
+    <span className="bg-rose-100 text-rose-700 text-xs px-2.5 py-1 rounded-full font-bold border border-rose-200">
+      {percentage}% Match
+    </span>
+  );
+}
+
+export function App(): JSX.Element {
   const [inputUrl, setInputUrl] = useState('');
   const { data, loading, error: _error, fetchComparison } = useProductComparison();
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (inputUrl) fetchComparison(inputUrl);
-  };
-
-  const getConfidenceBadge = (score) => {
-    const percentage = Math.round(score * 100);
-    if (score >= 0.7) return <span className="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold border border-emerald-200">{percentage}% Match</span>;
-    if (score >= 0.5) return <span className="bg-amber-100 text-amber-700 text-xs px-2.5 py-1 rounded-full font-bold border border-amber-200">{percentage}% Match</span>;
-    return <span className="bg-rose-100 text-rose-700 text-xs px-2.5 py-1 rounded-full font-bold border border-rose-200">{percentage}% Match</span>;
   };
 
   return (
@@ -39,27 +54,32 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* 2. HERO SEARCH SECTION */}
         <section className="pt-16 pb-20 text-center">
           <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-            Stop overpaying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Scan the web.</span>
+            Stop overpaying.{' '}
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-violet-600">
+              Scan the web.
+            </span>
           </h2>
           <p className="text-slate-500 text-lg mb-10 max-w-2xl mx-auto">
-            Paste any product link below and we'll instantly find better deals across major marketplaces.
+            Paste any product link below and we'll instantly find better deals across major
+            marketplaces.
           </p>
-          
+
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto group">
             <div className="relative flex items-center p-2 bg-white rounded-2xl shadow-2xl border border-slate-200 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
-              <input 
-                type="text" 
+              <input
+                type="url"
+                aria-label="Product URL"
                 placeholder="Paste Amazon or Flipkart URL..."
                 className="flex-1 py-4 px-6 outline-none text-slate-700 text-lg bg-transparent"
                 value={inputUrl}
                 onChange={(e) => setInputUrl(e.target.value)}
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
+                aria-label={loading ? 'Scanning for deals' : 'Compare prices'}
                 className="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 hover:shadow-lg active:scale-95 transition-all disabled:opacity-50"
                 disabled={loading}
               >
@@ -68,6 +88,16 @@ function App() {
             </div>
           </form>
         </section>
+
+        {/* ERROR STATE */}
+        {error && (
+          <div
+            role="alert"
+            className="max-w-3xl mx-auto mb-8 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-medium"
+          >
+            {error}
+          </div>
+        )}
 
         {/* 3. RESULTS AREA */}
         {loading && (
@@ -83,31 +113,39 @@ function App() {
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
             <div className="lg:col-span-3 space-y-10">
-              
               {/* PRIMARY PRODUCT */}
               {data.results && data.results[0]?.product && (
                 <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col md:flex-row group transition-all hover:border-indigo-200">
                   <div className="p-8 flex-1">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
-                        <span className="text-indigo-600 text-[10px] font-black uppercase tracking-widest">Tracking Live Price</span>
+                      <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+                      <span className="text-indigo-600 text-[10px] font-black uppercase tracking-widest">
+                        Tracking Live Price
+                      </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">
                       {data.results[0].product.title}
                     </h2>
                     <div className="flex items-center gap-4 text-slate-400">
-                        <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-md">
-                            <span className="w-4 h-4 rounded-full bg-slate-200"></span>
-                            <span className="text-xs font-bold capitalize">{data.results[0].platform}</span>
-                        </div>
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-md">
+                        <span className="w-4 h-4 rounded-full bg-slate-200"></span>
+                        <span className="text-xs font-bold capitalize">
+                          {data.results[0].platform}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="bg-slate-50 p-8 flex flex-col justify-center items-center md:items-end border-t md:border-t-0 md:border-l border-slate-100 min-w-[280px]">
+                  <div className="bg-slate-50 p-8 flex flex-col justify-center items-center md:items-end border-t md:border-t-0 md:border-l border-slate-100 min-w-70">
                     <span className="text-slate-400 text-sm font-bold uppercase mb-1">Found For</span>
                     <div className="text-4xl font-black text-slate-900 mb-6 tracking-tight">
-                        {data.results[0].product.price}
+                      {data.results[0].product.price}
                     </div>
-                    <a href={data.results[0].product.productUrl} className="w-full text-center bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black transition-all shadow-lg">
+                    <a
+                      href={data.results[0].product.productUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-center bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black transition-all shadow-lg"
+                    >
                       Visit Store
                     </a>
                   </div>
@@ -118,31 +156,43 @@ function App() {
               {data.similarProducts?.length > 0 && (
                 <div>
                   <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
-                    <span className="w-8 h-[2px] bg-indigo-600"></span>
+                    <span className="w-8 h-0.5 bg-indigo-600"></span>
                     Market Alternatives
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {data.similarProducts.map((item, idx) => (
-                      <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-100 transition-all group flex flex-col relative">
+                      <article
+                        key={`${item.platform}-${item.product.productUrl}`}
+                        className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-100 transition-all group flex flex-col relative"
+                      >
                         {idx === 0 && (
                           <div className="absolute -top-3 left-6 bg-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg">
                             BEST PRICE
                           </div>
                         )}
                         <div className="flex justify-between items-start mb-4 pt-2">
-                          <span className="text-xs font-black text-indigo-600 uppercase tracking-tighter">{item.platform}</span>
+                          <span className="text-xs font-black text-indigo-600 uppercase tracking-tighter">
+                            {item.platform}
+                          </span>
                           {getConfidenceBadge(item.confidence)}
                         </div>
                         <h4 className="text-sm font-bold text-slate-800 line-clamp-2 mb-6 group-hover:text-indigo-600 transition-colors">
                           {item.product.title}
                         </h4>
                         <div className="mt-auto">
-                          <div className="text-2xl font-black text-slate-900 mb-4">{item.product.price}</div>
-                          <a href={item.product.productUrl} className="block w-full text-center border-2 border-slate-100 text-slate-600 font-bold py-2.5 rounded-xl hover:bg-indigo-50 hover:border-indigo-100 hover:text-indigo-600 transition-all">
+                          <div className="text-2xl font-black text-slate-900 mb-4">
+                            {item.product.price}
+                          </div>
+                          <a
+                            href={item.product.productUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-center border-2 border-slate-100 text-slate-600 font-bold py-2.5 rounded-xl hover:bg-indigo-50 hover:border-indigo-100 hover:text-indigo-600 transition-all"
+                          >
                             View Deal
                           </a>
                         </div>
-                      </div>
+                      </article>
                     ))}
                   </div>
                 </div>
@@ -156,18 +206,26 @@ function App() {
                   Scanner Status
                 </h4>
                 <div className="space-y-4 mb-8">
-                  {data.results?.map((res, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-slate-500 capitalize">{res.platform}</span>
-                      <div className={`px-2 py-1 rounded-md text-[10px] font-black uppercase ${res.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
+                  {data.results?.map((res) => (
+                    <div key={res.platform} className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-slate-500 capitalize">
+                        {res.platform}
+                      </span>
+                      <div
+                        className={`px-2 py-1 rounded-md text-[10px] font-black uppercase ${
+                          res.status === 'success'
+                            ? 'bg-emerald-50 text-emerald-600'
+                            : 'bg-slate-50 text-slate-400'
+                        }`}
+                      >
                         {res.status === 'success' ? 'Ready' : 'Skipped'}
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="bg-indigo-600 rounded-xl p-4 text-white">
-                    <p className="text-[10px] font-bold opacity-70 uppercase mb-1">Engine Score</p>
-                    <p className="text-xl font-black">Optimal Result</p>
+                  <p className="text-[10px] font-bold opacity-70 uppercase mb-1">Engine Score</p>
+                  <p className="text-xl font-black">Optimal Result</p>
                 </div>
               </div>
             </aside>
@@ -177,5 +235,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
