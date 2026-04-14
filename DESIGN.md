@@ -3,6 +3,7 @@
 **Version:** 2.0 Beta
 **Package:** `market-sentinel-ui`
 **Last Updated:** 2026-04-14
+**Status:** Pre-production -- see [Section 17: Gap Analysis](#17-gap-analysis--production-readiness) and [plan.md](./plan.md) for the production roadmap.
 
 ---
 
@@ -24,6 +25,7 @@
 14. [Environment Configuration](#14-environment-configuration)
 15. [Security Considerations](#15-security-considerations)
 16. [Future Improvements](#16-future-improvements)
+17. [Gap Analysis & Production Readiness](#17-gap-analysis--production-readiness)
 
 ---
 
@@ -886,4 +888,76 @@ graph TD
 
 ---
 
-*This document describes the OmniKart UI frontend as of the initial release (v2.0 Beta). It should be updated as the architecture evolves.*
+---
+
+## 17. Gap Analysis & Production Readiness
+
+This section documents every issue identified during a senior-engineer code review. Each item is categorized by severity and mapped to a phase in [plan.md](./plan.md).
+
+### 17.1 Architecture & Code Quality
+
+| # | Issue | File(s) | Severity | Plan Phase |
+|---|-------|---------|----------|------------|
+| A1 | **Monolithic App.jsx** -- 180 lines, all UI in one component. No separation of concerns, untestable in isolation. | `App.jsx` | Critical | P1 |
+| A2 | **No TypeScript** -- `@types/react` installed but JS-only. No compile-time type safety for props, API responses, or state. | `*` | Critical | P1 |
+| A3 | **No tests** -- zero unit, integration, or e2e tests. No Vitest, no React Testing Library, no Playwright. | `*` | Critical | P2 |
+| A4 | **No error boundary** -- any unhandled render error crashes the entire app to a white screen. | `App.jsx` | High | P1 |
+| A5 | **No routing** -- cannot deep-link to results, no browser history, blocks future multi-page expansion. | `App.jsx` | High | P1 |
+| A6 | **Dead code** -- `App.css` (185 lines) is entirely unused Vite template CSS. `assets/react.svg`, `assets/vite.svg`, `public/icons.svg` are unreferenced. | `App.css`, `assets/*` | Medium | P1 |
+| A7 | **CI has no test step** -- pipeline only lints, never runs tests. A green build proves nothing about correctness. | `ci-cd.yml` | High | P2 |
+
+### 17.2 Data Fetching & State
+
+| # | Issue | File(s) | Severity | Plan Phase |
+|---|-------|---------|----------|------------|
+| D1 | **No request cancellation** -- no `AbortController`. If a user fires two searches quickly, the first (stale) response can overwrite the second. | `useProductComparison.js` | High | P1 |
+| D2 | **No URL validation** -- any string (empty, malformed, non-URL) is sent directly to the backend. | `App.jsx` | High | P1 |
+| D3 | **No retry or timeout** -- a single failed/slow request is a dead end; user has no recourse except manual retry. | `useProductComparison.js` | Medium | P1 |
+| D4 | **Misleading error message** -- `"Server expansion failed"` is a typo/meaningless to users. | `useProductComparison.js` | Low | P1 |
+| D5 | **Array index as React key** -- `key={idx}` in both `.map()` calls. Breaks reconciliation if list order changes. | `App.jsx` | Medium | P1 |
+| D6 | **Error state never rendered** -- `error` is tracked in state but the UI never displays it. Users see nothing on failure. | `App.jsx` | High | P1 |
+| D7 | **No empty-state handling** -- if API returns `results: []` or `similarProducts: []`, the user sees a blank page with no feedback. | `App.jsx` | Medium | P1 |
+
+### 17.3 Security & Accessibility
+
+| # | Issue | File(s) | Severity | Plan Phase |
+|---|-------|---------|----------|------------|
+| S1 | **Unsafe external links** -- `<a href={url}>` without `target="_blank" rel="noopener noreferrer"`. Enables reverse tabnapping. | `App.jsx` | High | P1 |
+| S2 | **No ARIA labels** -- search input, buttons, cards, and results have no accessible names or roles. | `App.jsx` | High | P1 |
+| S3 | **Nginx: no security headers** -- missing `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Strict-Transport-Security`, `Referrer-Policy`, `Permissions-Policy`. | `nginx.conf` | High | P3 |
+| S4 | **Nginx: no gzip/brotli** -- serving uncompressed JS/CSS bundles in production. | `nginx.conf` | Medium | P3 |
+| S5 | **Nginx: no cache-control** -- static assets (with Vite content hashes) are not cached; `index.html` should be no-cache. | `nginx.conf` | Medium | P3 |
+| S6 | **No HTTPS** -- Nginx listens on plain HTTP :80. TLS termination not configured. | `nginx.conf` | High | P3 |
+| S7 | **Docker: no HEALTHCHECK** -- orchestrators cannot detect an unhealthy container. | `Dockerfile` | Medium | P3 |
+
+### 17.4 UX & Polish
+
+| # | Issue | File(s) | Severity | Plan Phase |
+|---|-------|---------|----------|------------|
+| U1 | **Wrong HTML title** -- `<title>market-sentinel-ui</title>` instead of "OmniKart". No meta description, no Open Graph tags. | `index.html` | Medium | P1 |
+| U2 | **No keyboard navigation for results** -- tab order is undefined, cards are not focusable. | `App.jsx` | Medium | P1 |
+| U3 | **No search history or recent searches** -- common UX pattern missing for a search-centric app. | - | Low | P4 |
+
+### 17.5 Severity Legend
+
+| Level | Definition |
+|-------|-----------|
+| **Critical** | Blocks production deployment. Must fix before real users. |
+| **High** | Significant risk to stability, security, or user experience. Fix in the first sprint. |
+| **Medium** | Technical debt that compounds over time. Schedule within two sprints. |
+| **Low** | Nice-to-have. Fix opportunistically. |
+
+### 17.6 What's Already Solid
+
+Not everything needs fixing. These are strengths to preserve:
+
+- **Docker multi-stage build** -- clean separation of build and runtime, small image (~25 MB)
+- **Nginx reverse proxy** -- eliminates CORS entirely, clean `/api/*` forwarding
+- **CI/CD pipeline** -- lint + build + deploy on push to main; GHCR image tagging with SHA
+- **Tailwind-only styling** -- no CSS-in-JS complexity, no style conflicts, tree-shakeable
+- **Minimal dependencies** -- only `react` and `react-dom` in production; small attack surface
+- **Custom hook abstraction** -- API logic is already separated from view logic via `useProductComparison`
+
+---
+
+*This document describes the OmniKart UI frontend as of the initial release (v2.0 Beta). It should be updated as the architecture evolves. See [plan.md](./plan.md) for the phased execution roadmap.*
