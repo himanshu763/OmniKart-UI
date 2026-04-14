@@ -37,7 +37,7 @@ export function SearchForm({ onSubmit, loading }: SearchFormProps): JSX.Element 
         marketplaces.
       </p>
 
-      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+      <form onSubmit={handleSubmit} noValidate className="max-w-3xl mx-auto">
         <div className="relative flex items-center p-2 bg-white rounded-2xl shadow-2xl border border-slate-200 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
           <input
             type="url"

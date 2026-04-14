@@ -229,10 +229,10 @@ const fetchComparison = async (url: string) => {
 ### P2.1 -- Testing Setup
 
 **Tasks:**
-- [ ] Install Vitest + React Testing Library + jsdom
-- [ ] Add `vitest.config.ts` with jsdom environment
-- [ ] Add `npm run test` and `npm run test:coverage` scripts
-- [ ] Create test directory structure mirroring `src/`
+- [x] Install Vitest + React Testing Library + jsdom
+- [x] Add `vitest.config.ts` with jsdom environment
+- [x] Add `npm run test` and `npm run test:coverage` scripts
+- [x] Create test directory structure mirroring `src/`
 
 ---
 
