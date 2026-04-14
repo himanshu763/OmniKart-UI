@@ -29,3 +29,9 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Coverage output
+/coverage/
+
+# Claude worktree metadata
+.claude/
