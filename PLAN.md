@@ -202,23 +202,23 @@ const fetchComparison = async (url: string) => {
 **Why:** Even with one page, Router enables deep-linking, future pages, and proper browser history.
 
 **Tasks:**
-- [ ] Install `react-router-dom`
-- [ ] Wrap app in `<BrowserRouter>`
-- [ ] Define routes: `/` (home/search), `*` (404 page)
-- [ ] Structure allows future routes: `/history`, `/about`, etc.
+- [x] Install `react-router-dom`
+- [x] Wrap app in `<BrowserRouter>`
+- [x] Define routes: `/` (home/search), `*` (404 page)
+- [x] Structure allows future routes: `/history`, `/about`, etc.
 
 ---
 
 ### P1.7 -- Cleanup & Polish
 
 **Tasks:**
-- [ ] Delete `App.css` (185 lines of dead Vite template code)
-- [ ] Delete unused assets: `react.svg`, `vite.svg`, `public/icons.svg`
-- [ ] Fix `index.html`:
+- [x] Delete `App.css` (185 lines of dead Vite template code)
+- [x] Delete unused assets: `react.svg`, `vite.svg`, `public/icons.svg`
+- [x] Fix `index.html`:
   - Title: `OmniKart - Find the Best Deal Instantly`
   - Add `<meta name="description" content="...">`
   - Add Open Graph tags (`og:title`, `og:description`, `og:image`)
-- [ ] Rename package: `"name": "market-sentinel-ui"` -> `"name": "omnikart-ui"`
+- [x] Rename package: `"name": "market-sentinel-ui"` -> `"name": "omnikart-ui"`
 
 ---
 
