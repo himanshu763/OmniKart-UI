@@ -7,7 +7,7 @@ import tsparser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage']),
+  globalIgnores(['dist', 'coverage', '.claude']),
   {
     files: ['playwright.config.ts', 'vitest.config.ts'],
     languageOptions: {
